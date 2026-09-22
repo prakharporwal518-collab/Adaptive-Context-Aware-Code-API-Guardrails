@@ -1,0 +1,101 @@
+/* ==========================================================================
+   GuardX design tokens
+   --------------------------------------------------------------------------
+   Two colour systems live here and they are deliberately kept apart:
+
+   1. SURFACE / INK  - the neutral chassis. Warm-shifted charcoal, never pure
+      black, so code panels and data tables don't vibrate under long reading.
+   2. SIGNAL         - risk, decision and status. These are reserved. A signal
+      colour never becomes decoration and never stands alone: every use is
+      paired with a text label (see .sev / .decision in app.css).
+
+   Chart series colours were validated for CVD separation against the panel
+   surface (#12161d). Do not re-pick them by eye.
+   ========================================================================== */
+
+:root {
+  /* -- surfaces ---------------------------------------------------------- */
+  --bg            : #0b0e13;   /* page */
+  --bg-sunken     : #080a0e;   /* wells, code gutters, inset tracks */
+  --panel         : #12161d;   /* primary panel surface */
+  --panel-raised  : #171c25;   /* drawers, menus, hovered rows */
+  --panel-header  : #10141b;
+
+  /* -- lines ------------------------------------------------------------- */
+  --line          : #222834;   /* standard hairline */
+  --line-soft     : #1a1f29;   /* internal dividers, table rules */
+  --line-strong   : #2e3746;   /* input borders, focused containers */
+
+  /* -- ink --------------------------------------------------------------- */
+  --ink           : #e4e8ef;   /* primary text */
+  --ink-secondary : #a4adbd;   /* body copy, secondary labels */
+  --ink-muted     : #6d7788;   /* metadata, timestamps, captions */
+  --ink-faint     : #4a5262;   /* disabled, axis ticks, watermarks */
+
+  /* -- brand / interactive ----------------------------------------------- */
+  --accent        : #5a9fd4;
+  --accent-bright : #7bb8e6;
+  --accent-dim    : #2e5f85;
+  --accent-wash   : rgba(90, 159, 212, 0.10);
+  --accent-ink    : #0b0e13;   /* text on a filled accent surface */
+
+  /* -- signal: risk severity --------------------------------------------- */
+  /* Ordered low -> critical. Always rendered with its text label. */
+  --sev-low       : #3f9e73;
+  --sev-low-wash  : rgba(63, 158, 115, 0.13);
+  --sev-med       : #b0862a;
+  --sev-med-wash  : rgba(176, 134, 42, 0.14);
+  --sev-high      : #c96f32;
+  --sev-high-wash : rgba(201, 111, 50, 0.14);
+  --sev-crit      : #c8413c;
+  --sev-crit-wash : rgba(200, 65, 60, 0.14);
+  --sev-info      : #5f7d95;
+  --sev-info-wash : rgba(95, 125, 149, 0.14);
+
+  /* -- signal: guardrail decision ---------------------------------------- */
+  --allow         : #3f9e73;
+  --flag          : #b0862a;
+  --block         : #c8413c;
+
+  /* -- chart series (validated, dark surface) ---------------------------- */
+  --series-allowed: #3f86b8;
+  --series-flagged: #b0862a;
+  --series-blocked: #c8413c;
+  --grid          : #1f2531;   /* one step off panel, hairline, solid */
+
+  /* -- type -------------------------------------------------------------- */
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
+               "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono",
+               Menlo, Consolas, monospace;
+
+  /* -- geometry ---------------------------------------------------------- */
+  /* Radii stay small on purpose. Data surfaces are square; only controls and
+     pills round, and never past 4px except true pills. */
+  --r-sm: 2px;
+  --r-md: 3px;
+  --r-lg: 4px;
+  --r-pill: 100px;
+
+  --rail-w: 216px;
+  --topbar-h: 52px;
+
+  /* -- elevation --------------------------------------------------------- */
+  --shadow-drawer: -18px 0 48px rgba(0, 0, 0, 0.44);
+  --shadow-pop: 0 10px 28px rgba(0, 0, 0, 0.5);
+
+  /* -- motion ------------------------------------------------------------ */
+  --ease: cubic-bezier(0.2, 0, 0.13, 1);
+  --fast: 110ms;
+  --med: 200ms;
+  --slow: 320ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

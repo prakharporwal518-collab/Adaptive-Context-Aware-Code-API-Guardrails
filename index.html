@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuardX — adaptive, context-aware guardrails for code and API traffic</title>
+<meta name="description" content="GuardX scores code changes and API calls against the context they happen in — identity, session, tenant, baseline — instead of a fixed rule table.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b0e13">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+
+<header class="site-hd">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M10 1.6 3.2 4.3v5.2c0 4 2.7 6.9 6.8 8 4.1-1.1 6.8-4 6.8-8V4.3z" stroke="#5a9fd4" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M7.2 7.2 5 10l2.2 2.8M12.8 7.2 15 10l-2.2 2.8" stroke="#e4e8ef" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="wordmark">GuardX</span>
+    </a>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#context">Context</a>
+      <a href="#surfaces">Surfaces</a>
+      <a href="#scoring">Scoring</a>
+      <a href="#policies">Policies</a>
+      <a href="#console">Console</a>
+    </nav>
+    <div class="spacer"></div>
+    <a class="btn btn-primary btn-lg" href="app.html">Open the console</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================================================== hero -->
+  <section class="wrap hero">
+    <div class="hero-copy">
+    <span class="hero-kicker">Developer security layer</span>
+    <h1>Guardrails that read the <em>context</em>, not just the rule.</h1>
+    <p>
+      The same API call can be routine or an incident depending on who made it, from what
+      session, against whose tenant, and how far it sits from that identity&rsquo;s own baseline.
+      GuardX scores every code change and every API call against that context, then allows,
+      flags or blocks it before it lands.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-lg" href="app.html">Open the console</a>
+      <a class="btn btn-lg" href="#context">How it decides</a>
+    </div>
+
+    <dl class="hero-facts">
+      <div>
+        <dt>Enforcement points</dt>
+        <dd>Repository scan on push &middot; in-line guardrail before the service</dd>
+      </div>
+      <div>
+        <dt>Decision cost</dt>
+        <dd>6&ndash;16ms on stopped calls; allowed traffic is not held</dd>
+      </div>
+      <div>
+        <dt>Failure mode</dt>
+        <dd>A false positive costs a triage item, not an outage &mdash; borderline
+            scores flag rather than block</dd>
+      </div>
+    </dl>
+    </div>
+
+    <!-- A real record from the demo dataset, rendered the way the console
+         renders it. Not a mockup of a product that doesn't exist. -->
+    <figure class="strip">
+      <figcaption class="strip-hd">
+        <span class="decision decision-block">BLOCKED</span>
+        <span class="id">req_9f4c21a8</span>
+        <span class="meta" style="margin-left:auto">POL-007</span>
+      </figcaption>
+      <div class="strip-body">
+        <div class="strip-left">
+          <div class="strip-req"><span class="m">POST</span>/v2/ledger/entries/8841/reverse</div>
+          <p class="meta" style="margin:-7px 0 13px">02:47:11 · production · ledger · d.mehta (contractor)</p>
+
+          <div class="fx">
+            <div class="fx-hd"><span class="k">session.auth_age_s</span><span class="v">742</span><span class="w">+26</span></div>
+            <div class="fx-track"><div class="fx-fill" style="width:100%"></div></div>
+            <div class="fx-note">Assertion older than the 60s window applied to unrecognised devices</div>
+          </div>
+          <div class="fx">
+            <div class="fx-hd"><span class="k">session.device</span><span class="v">unrecognised</span><span class="w">+22</span></div>
+            <div class="fx-track"><div class="fx-fill" style="width:85%"></div></div>
+            <div class="fx-note">First observation of this device fingerprint for u_7731</div>
+          </div>
+          <div class="fx">
+            <div class="fx-hd"><span class="k">actor.role</span><span class="v">contractor</span><span class="w">+19</span></div>
+            <div class="fx-track"><div class="fx-fill" style="width:73%"></div></div>
+            <div class="fx-note">Role has no standing grant on posted ledger entries</div>
+          </div>
+          <div class="fx">
+            <div class="fx-hd"><span class="k">endpoint.sensitivity</span><span class="v">tier-1</span><span class="w">+16</span></div>
+            <div class="fx-track"><div class="fx-fill" style="width:62%"></div></div>
+            <div class="fx-note">Reversal mutates a settled financial record</div>
+          </div>
+        </div>
+        <div class="strip-right">
+          <span class="label" style="display:block;margin-bottom:7px">Composite risk</span>
+          <div class="score-big">91<small> / 100</small></div>
+          <svg viewBox="0 0 260 30" width="100%" height="30" style="margin-top:12px" role="img" aria-label="Risk 91 of 100, above the block threshold of 70">
+            <rect x="0" y="6" width="260" height="7" rx="2" fill="#1b212b"/>
+            <rect x="0" y="6" width="236" height="7" rx="2" fill="#c8413c"/>
+            <line x1="117" y1="2" x2="117" y2="17" stroke="#4a5262" stroke-width="1"/>
+            <text x="117" y="27" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#4a5262">review 45</text>
+            <line x1="182" y1="2" x2="182" y2="17" stroke="#4a5262" stroke-width="1"/>
+            <text x="182" y="27" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" fill="#4a5262">block 70</text>
+          </svg>
+          <p class="meta" style="margin-top:12px;line-height:1.55">
+            Above the block threshold. The guardrail returned 403 in 12ms; the ledger
+            service never received the call.
+          </p>
+        </div>
+      </div>
+    </figure>
+  </section>
+
+  <!-- ===================================================== context -->
+  <section class="wrap sec" id="context">
+    <div class="sec-hd">
+      <span class="sec-num">01</span>
+      <h2>Why a fixed rule gets this wrong</h2>
+      <span class="sec-sub">Same endpoint, same payload, same policy</span>
+    </div>
+
+    <p class="lede">
+      A static rule has one answer for <code class="inline">POST /v2/ledger/entries/:id/reverse</code>.
+      Either contractors may reverse a ledger entry or they may not &mdash; and whichever you pick is
+      wrong roughly half the time. <b>GuardX evaluates the same policy against the surrounding
+      context and reaches different, defensible conclusions.</b>
+    </p>
+
+    <div class="compare" style="margin-top:24px">
+      <div>
+        <div class="compare-hd">
+          <span class="label">Request A</span>
+          <span class="id">req_8804ce19</span>
+        </div>
+        <dl>
+          <dt>actor.role</dt><dd>engineer</dd>
+          <dt>session.device</dt><dd>known · 214 sessions</dd>
+          <dt>session.auth_age_s</dt><dd>41</dd>
+          <dt>time.local</dt><dd>14:22 · in window</dd>
+          <dt>actor.recent_blocks</dt><dd>0</dd>
+        </dl>
+        <div class="compare-out">
+          <span class="rv" style="color:var(--sev-low)">11</span>
+          <span class="decision decision-allow">ALLOWED</span>
+          <span class="meta" style="margin-left:auto">201 · 78ms</span>
+        </div>
+        <p class="compare-note">Forwarded without friction. Nothing about this call departs from the identity&rsquo;s own 30-day pattern.</p>
+      </div>
+      <div>
+        <div class="compare-hd">
+          <span class="label">Request B</span>
+          <span class="id">req_9f4c21a8</span>
+        </div>
+        <dl>
+          <dt>actor.role</dt><dd class="diff">contractor</dd>
+          <dt>session.device</dt><dd class="diff">unrecognised</dd>
+          <dt>session.auth_age_s</dt><dd class="diff">742</dd>
+          <dt>time.local</dt><dd class="diff">02:47 · outside window</dd>
+          <dt>actor.recent_blocks</dt><dd class="diff">2</dd>
+        </dl>
+        <div class="compare-out">
+          <span class="rv" style="color:var(--sev-crit)">91</span>
+          <span class="decision decision-block">BLOCKED</span>
+          <span class="meta" style="margin-left:auto">403 · 12ms</span>
+        </div>
+        <p class="compare-note">Rejected under POL-007. Five independent signals moved together; none of them alone would have been enough.</p>
+      </div>
+    </div>
+
+    <p class="lede" style="margin-top:22px">
+      Both requests were evaluated by the same policy, in the same environment, against the same
+      endpoint. The difference is entirely contextual &mdash; which is the part a rule table cannot express.
+    </p>
+  </section>
+
+  <!-- ===================================================== surfaces -->
+  <section class="wrap sec" id="surfaces">
+    <div class="sec-hd">
+      <span class="sec-num">02</span>
+      <h2>Where it sits</h2>
+      <span class="sec-sub">Two enforcement points, one context model</span>
+    </div>
+
+    <table class="spec">
+      <thead>
+        <tr><th>Surface</th><th>What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="s-name">Code analyzer</div>
+            <div class="s-when">on push · on pull request</div>
+          </td>
+          <td>
+            <p class="s-body">
+              Scans the repository and rates each finding by how reachable it actually is,
+              not by rule severity alone. A SQL concatenation on a route the support-agent
+              role can reach is rated above the same pattern behind an admin guard.
+              Every finding carries a suggested patch and the commit that introduced it.
+            </p>
+            <div class="s-sigs"><span>reachability</span><span>route exposure</span><span>introducing commit</span><span>CWE mapping</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="s-name">API guardrail</div>
+            <div class="s-when">in-line · pre-service</div>
+          </td>
+          <td>
+            <p class="s-body">
+              Inspects the request before it reaches the service, scores it, and returns a
+              decision. Blocked calls never touch the upstream. Flagged calls complete and
+              raise a review event, so a false positive costs a triage item rather than an outage.
+            </p>
+            <div class="s-sigs"><span>payload classification</span><span>destination allow-list</span><span>rate deviation</span><span>tenant scope</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="s-name">Context model</div>
+            <div class="s-when">continuous</div>
+          </td>
+          <td>
+            <p class="s-body">
+              Maintains a per-identity baseline &mdash; endpoints touched, volumes, hours,
+              devices &mdash; and expresses deviation as a z-score the policies can reference
+              directly. This is what lets a threshold read <code class="inline">rate.zscore &gt; 3.0</code>
+              instead of a row ceiling that is wrong for every team at once.
+            </p>
+            <div class="s-sigs"><span>30-day baseline</span><span>device fingerprints</span><span>working windows</span><span>privilege deltas</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="s-name">Correlation</div>
+            <div class="s-when">on every event</div>
+          </td>
+          <td>
+            <p class="s-body">
+              Links a runtime block to the code that made it possible. The SSRF finding in
+              <code class="inline">webhook.ts</code> and the two egress blocks against the same
+              unapproved sink are one item of work, presented as one item of work.
+            </p>
+            <div class="s-sigs"><span>request → policy → finding</span><span>shared audit trail</span></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===================================================== scoring -->
+  <section class="wrap sec" id="scoring">
+    <div class="sec-hd">
+      <span class="sec-num">03</span>
+      <h2>How a decision is reached</h2>
+      <span class="sec-sub">Median in-line cost: 12&ndash;21ms on stopped calls</span>
+    </div>
+
+    <div class="pipe">
+      <div class="pipe-step">
+        <span class="pipe-dot">1</span>
+        <div class="pipe-b">
+          <div class="pipe-t">Resolve the context</div>
+          <p class="pipe-d">
+            Identity, role, session age, device recognition, tenant claim, environment and
+            the caller&rsquo;s own baseline are assembled into one evaluation object. No network
+            calls &mdash; the baseline is kept warm per identity.
+          </p>
+          <div class="pipe-m">actor · session · object · rate · env</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-dot">2</span>
+        <div class="pipe-b">
+          <div class="pipe-t">Classify the payload</div>
+          <p class="pipe-d">
+            Bodies are scanned for PII classes, executable fragments and entropy that does not
+            match prior values for that field. Classification results become context fields the
+            policies can match on.
+          </p>
+          <div class="pipe-m">payload.classification · payload.matches · payload.entropy</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-dot">3</span>
+        <div class="pipe-b">
+          <div class="pipe-t">Evaluate matching policies</div>
+          <p class="pipe-d">
+            Only policies whose path and method selectors match are evaluated. Each condition
+            that holds contributes a weight; some weights are negative, so a fresh step-up
+            assertion or an established service identity actively lowers the score.
+          </p>
+          <div class="pipe-m">weights are signed · negative evidence counts</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-dot">4</span>
+        <div class="pipe-b">
+          <div class="pipe-t">Apply thresholds</div>
+          <p class="pipe-d">
+            Below 45 the request is forwarded. Between 45 and 70 it completes and raises a
+            review event. At 70 and above the guardrail rejects it with 403 before the
+            service is reached.
+          </p>
+          <div class="pipe-m">allow &lt; 45 · flag 45–69 · block ≥ 70</div>
+        </div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-dot">5</span>
+        <div class="pipe-b">
+          <div class="pipe-t">Record the reasoning</div>
+          <p class="pipe-d">
+            Every decision is written with its factor breakdown, the policy that produced it and
+            the request id. You can reconstruct why any call was stopped months later, which is
+            the part that matters when someone asks.
+          </p>
+          <div class="pipe-m">append-only · 30-day request retention · exportable</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================== policies -->
+  <section class="wrap sec" id="policies">
+    <div class="sec-hd">
+      <span class="sec-num">04</span>
+      <h2>Policies are versioned text</h2>
+      <span class="sec-sub">Reviewed in the repository, tested before merge</span>
+    </div>
+
+    <p class="lede" style="margin-bottom:22px">
+      A policy is a selector, a condition set and an action. Conditions reference context fields
+      rather than literals wherever the literal would age badly &mdash; the export threshold below is
+      a deviation from the caller&rsquo;s own baseline, not a row count somebody picked in 2023.
+    </p>
+
+    <div class="codepanel">
+      <div class="codepanel-hd">
+        <span class="label">policies/POL-022.yaml</span>
+        <span class="meta" style="margin-left:auto">owner: analytics</span>
+      </div>
+      <pre><span class="t-kw">id</span>:       POL-022
+<span class="t-kw">name</span>:     <span class="t-str">"Throttle bulk export by role"</span>
+<span class="t-kw">action</span>:   flag           <span class="t-com"># allow through, raise a review event</span>
+<span class="t-kw">severity</span>: medium
+
+<span class="t-kw">select</span>:
+  path:   <span class="t-str">/v2/exports/*</span>
+  method: [<span class="t-str">GET</span>, <span class="t-str">POST</span>]
+
+<span class="t-kw">when</span>:
+  <span class="t-com"># Deviation from this identity's own 30-day baseline —</span>
+  <span class="t-com"># not a fixed ceiling that is wrong for every team at once.</span>
+  - rate.zscore       <span class="t-op">&gt;</span>  <span class="t-num">3.0</span>
+  - actor.role        <span class="t-op">not_in</span> [<span class="t-str">service-account</span>]
+
+<span class="t-kw">weights</span>:
+  rate.zscore:        <span class="t-num">30</span>
+  result.rows:        <span class="t-num">20</span>
+  actor.role:         <span class="t-num">13</span>
+  actor.is_baselined: <span class="t-num">-10</span>   <span class="t-com"># established pattern lowers the score</span>
+</pre>
+    </div>
+
+    <p class="lede" style="margin-top:20px">
+      The console ships a test bench that runs this evaluator against a request context you can
+      edit, and prints a per-condition trace. <b>You can see which condition failed before the
+      policy reaches production traffic.</b>
+    </p>
+  </section>
+
+  <!-- ===================================================== console -->
+  <section class="wrap sec" id="console">
+    <div class="sec-hd">
+      <span class="sec-num">05</span>
+      <h2>The console</h2>
+      <span class="sec-sub">Seeded with a working dataset — everything is clickable</span>
+    </div>
+
+    <nav class="tour" aria-label="Console views">
+      <a class="tour-row" href="app.html#/overview">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9.5h4v4H2zM2 2.5h4v4H2zM10 2.5h4v8h-4zM10 12.5h4v1h-4z"/></svg></span>
+        <span class="tour-nm">Overview</span>
+        <span class="tour-ds">Decision volume by hour, security events, identities under review and the open-finding mix. Every tile is derived from the request log, so the numbers agree with the tables behind them.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>1</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/api">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg></span>
+        <span class="tour-nm">API monitor</span>
+        <span class="tour-ds">Filterable request table with a detail drawer: factor weights, the policy evaluated, the inspected body, and the chain linking the request to its event and to any code finding that explains it.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>2</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/risk">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.8 2.3 4.4v4c0 3.1 2.4 5.3 5.7 5.9 3.3-.6 5.7-2.8 5.7-5.9v-4z"/></svg></span>
+        <span class="tour-nm">Risk analysis</span>
+        <span class="tour-ds">One score, its contributing factors, and the timeline of what the same identity did around it — the context that turns a number into a judgement you can defend.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>3</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/code">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg></span>
+        <span class="tour-nm">Code analyzer</span>
+        <span class="tour-ds">File tree, the flagged source with the finding inline, a suggested patch as a diff, and the runtime requests that correlate with it. Resolving a finding moves the dashboard.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>4</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/policies">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2.5h7l3 3v8H3z"/><path d="M9.5 2.5v3.5H13"/></svg></span>
+        <span class="tour-nm">Policies</span>
+        <span class="tour-ds">Conditions, action and a live test bench. Paste a request context, evaluate it, and read the per-condition trace — including which field came back undefined.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>5</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/copilot">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg></span>
+        <span class="tour-nm">Copilot</span>
+        <span class="tour-ds">Ask why a request was stopped. Answers are composed from the same records the console displays, with the tool calls shown, and it is read-only by design.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>6</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/audit">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.4 1.6"/></svg></span>
+        <span class="tour-nm">Audit log</span>
+        <span class="tour-ds">Guardrail decisions, finding lifecycle changes, policy edits and scan completions, in one append-only table. Anything you do in the console lands here as you do it.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>7</kbd></span>
+      </a>
+    </nav>
+  </section>
+
+</main>
+
+<footer class="site-ft">
+  <div class="wrap">
+    <p class="fnote">
+      <b style="color:var(--ink-secondary)">GuardX</b> &mdash; an adaptive, context-aware guardrail
+      layer for code and API traffic.<br>
+      This is a working front-end running on a seeded demo dataset: the tenant, repository,
+      identities and traffic are fabricated, but every figure in the console is computed from
+      that one dataset rather than written into the page. Nothing here reports on a real system.
+    </p>
+    <nav class="flinks" aria-label="Footer">
+      <a href="app.html">Console</a>
+      <a href="#context">Context</a>
+      <a href="#scoring">Scoring</a>
+      <a href="https://github.com/prakharporwal518-collab/adaptive-context-aware-code-api-guardrails">Source</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

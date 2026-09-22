@@ -1,0 +1,314 @@
+/* ==========================================================================
+   GuardX base — reset, typography scale, shared primitives
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv05" 1;
+}
+
+h1, h2, h3, h4, h5 { margin: 0; font-weight: 600; letter-spacing: -0.012em; }
+p  { margin: 0; }
+figure, figcaption, dl, dd, blockquote, pre { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+dl { padding: 0; }
+li { list-style: none; }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-bright); }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+svg { display: block; }
+
+::selection { background: rgba(90, 159, 212, 0.28); }
+
+/* --- focus ---------------------------------------------------------------
+   One visible ring everywhere. Keyboard only, so pointer users never see it. */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: var(--r-sm);
+}
+
+/* --- scrollbars ---------------------------------------------------------- */
+* { scrollbar-width: thin; scrollbar-color: #2b3340 transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: #262e3a; border-radius: 10px;
+  border: 3px solid transparent; background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: #333d4c; background-clip: content-box; }
+
+/* ==========================================================================
+   Typography utilities
+   ========================================================================== */
+
+/* Section eyebrow / column header. Small, tracked-out, mono — this is the
+   single most load-bearing label style in the product. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.mono { font-family: var(--font-mono); font-variant-ligatures: none; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Identifiers — request ids, commit shas, policy ids. */
+.id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-secondary);
+  letter-spacing: -0.01em;
+}
+
+.meta { font-size: 12px; color: var(--ink-muted); }
+
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ==========================================================================
+   Signal primitives
+   Every signal colour below is accompanied by its text label. Colour is the
+   second channel here, never the only one.
+   ========================================================================== */
+
+.sev {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 500; letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 6px 2px 5px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.sev::before {
+  content: ""; width: 5px; height: 5px; border-radius: 1px;
+  background: currentColor; flex: none;
+}
+.sev-critical { color: var(--sev-crit); background: var(--sev-crit-wash); border-color: rgba(200,65,60,.3); }
+.sev-high     { color: var(--sev-high); background: var(--sev-high-wash); border-color: rgba(201,111,50,.3); }
+.sev-medium   { color: var(--sev-med);  background: var(--sev-med-wash);  border-color: rgba(176,134,42,.3); }
+.sev-low      { color: var(--sev-low);  background: var(--sev-low-wash);  border-color: rgba(63,158,115,.3); }
+.sev-info     { color: var(--sev-info); background: var(--sev-info-wash); border-color: rgba(95,125,149,.3); }
+
+/* Guardrail decision. Squarer and heavier than severity so the two never get
+   confused when they sit in adjacent table columns. */
+.decision {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+  padding: 2px 7px; border-radius: var(--r-sm);
+  border: 1px solid currentColor;
+}
+.decision-block { color: var(--block); background: rgba(200,65,60,.12); }
+.decision-flag  { color: var(--flag);  background: rgba(176,134,42,.12); }
+.decision-allow { color: var(--ink-muted); border-color: var(--line-strong); background: transparent; }
+
+/* HTTP verbs. Weight and letterspacing do the work; only mutating verbs get
+   any colour at all, so a table of GETs stays quiet. */
+.verb {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.06em; color: var(--ink-muted);
+}
+.verb-post   { color: #6fa8c9; }
+.verb-put    { color: #a98cc4; }
+.verb-patch  { color: #a98cc4; }
+.verb-delete { color: var(--sev-crit); }
+
+/* HTTP status. 2xx recedes; 4xx/5xx step forward. */
+.status-2xx { color: var(--ink-secondary); }
+.status-4xx { color: var(--sev-med); }
+.status-5xx { color: var(--sev-crit); }
+
+/* Finding lifecycle */
+.state {
+  display: inline-block; font-family: var(--font-mono); font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.state-resolved { color: var(--sev-low); }
+.state-accepted { color: var(--ink-faint); }
+
+/* ==========================================================================
+   Controls
+   ========================================================================== */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 30px; padding: 0 11px;
+  font-size: 12.5px; font-weight: 500;
+  color: var(--ink-secondary);
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.btn:hover { background: #1e2530; border-color: #3a4556; color: var(--ink); }
+.btn:active { background: #181e28; }
+.btn[disabled] { opacity: .42; cursor: not-allowed; }
+.btn[disabled]:hover { background: var(--panel-raised); border-color: var(--line-strong); color: var(--ink-secondary); }
+
+.btn-primary {
+  background: var(--accent); border-color: var(--accent);
+  color: var(--accent-ink); font-weight: 600;
+}
+.btn-primary:hover { background: var(--accent-bright); border-color: var(--accent-bright); color: var(--accent-ink); }
+
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-ghost:hover { background: var(--panel-raised); border-color: var(--line); }
+
+.btn-sm { height: 25px; padding: 0 8px; font-size: 11.5px; }
+
+.btn-danger { color: var(--sev-crit); border-color: rgba(200,65,60,.34); background: rgba(200,65,60,.08); }
+.btn-danger:hover { background: rgba(200,65,60,.16); border-color: rgba(200,65,60,.5); color: #d9615c; }
+
+.input, .select {
+  height: 30px; padding: 0 9px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  color: var(--ink);
+  font-size: 12.5px;
+  transition: border-color var(--fast) var(--ease);
+}
+.input::placeholder { color: var(--ink-faint); }
+.input:focus, .select:focus { border-color: var(--accent-dim); }
+
+.select {
+  appearance: none;
+  padding-right: 26px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1.5L5 5.5L9 1.5' stroke='%236d7788' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  cursor: pointer;
+}
+
+/* Segmented control — used for time ranges and view switches. */
+.segmented {
+  display: inline-flex;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 2px;
+  gap: 2px;
+}
+.segmented button {
+  height: 24px; padding: 0 9px;
+  background: transparent; border: 0; border-radius: var(--r-sm);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.03em;
+  color: var(--ink-muted); cursor: pointer;
+  transition: color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.segmented button:hover { color: var(--ink-secondary); }
+.segmented button[aria-pressed="true"] { background: var(--panel-raised); color: var(--ink); }
+
+/* Toggle */
+.toggle {
+  position: relative; width: 30px; height: 17px; flex: none;
+  background: #2a3240; border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill); cursor: pointer;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.toggle::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--ink-muted);
+  transition: transform var(--med) var(--ease), background var(--fast) var(--ease);
+}
+.toggle[aria-checked="true"] { background: var(--accent-dim); border-color: var(--accent-dim); }
+.toggle[aria-checked="true"]::after { transform: translateX(13px); background: var(--accent-bright); }
+
+/* ==========================================================================
+   Code
+   ========================================================================== */
+
+code, pre, .code { font-family: var(--font-mono); font-variant-ligatures: none; }
+
+code.inline {
+  font-size: 12px;
+  padding: 1px 4px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  color: var(--ink-secondary);
+}
+
+/* Syntax tokens. Restrained: five classes, no rainbow. */
+.t-kw   { color: #b98ec9; }
+.t-str  { color: #8fb87f; }
+.t-num  { color: #cf9a6b; }
+.t-com  { color: #545d6d; font-style: italic; }
+.t-fn   { color: #6fa8c9; }
+.t-op   { color: #8b94a4; }
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl thead th {
+  position: sticky; top: 0; z-index: 2;
+  background: var(--panel-header);
+  text-align: left;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px; font-weight: 500; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--ink-muted);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tbl tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle;
+}
+.tbl tbody tr { cursor: pointer; transition: background var(--fast) var(--ease); }
+.tbl tbody tr:hover { background: rgba(255,255,255,.022); }
+.tbl tbody tr[aria-selected="true"] { background: var(--accent-wash); }
+.tbl tbody tr[aria-selected="true"] td:first-child { box-shadow: inset 2px 0 0 var(--accent); }
+.tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   Empty / error / loading states
+   ========================================================================== */
+
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 44px 24px; text-align: center;
+}
+.empty-title { font-size: 13px; font-weight: 600; color: var(--ink-secondary); }
+.empty-body { font-size: 12.5px; color: var(--ink-muted); max-width: 320px; line-height: 1.6; }
+.empty-rule { width: 22px; height: 1px; background: var(--line-strong); margin-bottom: 6px; }
+
+.skel {
+  background: linear-gradient(90deg, #171c25 0%, #1d232e 50%, #171c25 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.15s linear infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

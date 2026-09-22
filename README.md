@@ -111,8 +111,17 @@ assets/
 
 Published to GitHub Pages by `.github/workflows/deploy-pages.yml` on push. The
 workflow checks that every asset referenced by the two HTML pages exists before
-publishing, and enables Pages itself on the first run, so no manual repository
-setting is needed.
+publishing.
+
+**One-time setup by a repository admin:** Settings → Pages → Build and
+deployment → Source: **GitHub Actions**. This cannot be automated — creating a
+Pages site is an admin-scoped API that the workflow's `GITHUB_TOKEN` is refused
+access to, even with `pages: write`. Once it is set, re-run the latest workflow
+(Actions → Deploy GuardX to GitHub Pages → Re-run jobs) and every later push
+deploys on its own.
+
+The site will be served at
+`https://prakharporwal518-collab.github.io/Adaptive-Context-Aware-Code-API-Guardrails/`.
 
 ---
 

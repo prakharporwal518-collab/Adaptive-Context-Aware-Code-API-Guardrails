@@ -186,23 +186,34 @@ body { background: var(--bg); }
   color: var(--ink-secondary);
 }
 
-/* --- console tour -------------------------------------------------------- */
-
-.tour { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0;
-  border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
-.tour-item {
-  padding: 16px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
-  display: block; color: inherit;
+/* --- console index -------------------------------------------------------
+   An index of the console's views, not a feature grid: one row each, on
+   hairlines, in the same register as the spec table in section 02. They are
+   navigation, so they get list treatment rather than six identical cards. */
+.tour { border-top: 1px solid var(--line); }
+.tour-row {
+  display: grid;
+  grid-template-columns: 22px 148px minmax(0, 1fr) 62px;
+  gap: 16px; align-items: baseline;
+  padding: 15px 4px;
+  border-bottom: 1px solid var(--line-soft);
+  color: inherit;
   transition: background var(--fast) var(--ease);
 }
-.tour-item:nth-child(2n) { border-right: 0; }
-.tour-item:nth-last-child(-n+2) { border-bottom: 0; }
-.tour-item:hover { background: var(--panel); color: inherit; }
-.tour-item:hover .tour-t { color: var(--accent-bright); }
-.tour-hd { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; color: var(--ink-muted); }
-.tour-t { font-size: 13.5px; font-weight: 600; color: var(--ink); transition: color var(--fast) var(--ease); }
-.tour-d { font-size: 13px; color: var(--ink-muted); line-height: 1.6; }
-.tour-k { margin-top: 9px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+.tour-row:hover { background: rgba(255, 255, 255, 0.022); color: inherit; }
+.tour-ic { color: var(--ink-faint); transform: translateY(2px); }
+.tour-row:hover .tour-ic { color: var(--accent); }
+.tour-nm { font-size: 14px; font-weight: 600; color: var(--ink); }
+.tour-row:hover .tour-nm { color: var(--accent-bright); }
+.tour-ds { font-size: 13.5px; color: var(--ink-secondary); line-height: 1.62; }
+.tour-kb { display: flex; gap: 3px; justify-content: flex-end; }
+.tour-kb kbd {
+  font-family: var(--font-mono); font-size: 10.5px; line-height: 16px;
+  min-width: 16px; text-align: center; padding: 0 4px;
+  color: var(--ink-faint);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--panel-header);
+}
 
 /* --- footer -------------------------------------------------------------- */
 
@@ -223,10 +234,10 @@ body { background: var(--bg); }
   .wrap { padding: 0 20px; }
   .compare { grid-template-columns: minmax(0, 1fr); }
   .compare > div + div { border-left: 0; border-top: 1px solid var(--line); }
-  .tour { grid-template-columns: minmax(0, 1fr); }
-  .tour-item { border-right: 0; }
-  .tour-item:nth-last-child(-n+2) { border-bottom: 1px solid var(--line-soft); }
-  .tour-item:last-child { border-bottom: 0; }
+  .tour-row { grid-template-columns: 22px minmax(0, 1fr); gap: 6px 14px; }
+  .tour-nm { grid-column: 2; }
+  .tour-ds { grid-column: 2; }
+  .tour-kb { grid-column: 2; justify-content: flex-start; margin-top: 3px; }
   .site-nav { display: none; }
   .sec { padding: 40px 20px; }
   .hero { padding: 46px 20px 34px; }

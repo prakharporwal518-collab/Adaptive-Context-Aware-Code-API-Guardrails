@@ -52,11 +52,13 @@ jobs:
           [ "$missing" -eq 0 ] || exit 1
           echo "all referenced assets present"
 
-      # enablement turns Pages on (build_type: workflow) the first time this
-      # runs, so the repository needs no manual Settings step.
+      # Note: `enablement: true` does not help here. Creating a Pages site is
+      # an admin-scoped API and GITHUB_TOKEN is refused with "Resource not
+      # accessible by integration", so Pages has to be switched on once by a
+      # repository admin:
+      #   Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+      # Every run after that succeeds without further configuration.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -392,53 +392,47 @@
     </div>
 
     <nav class="tour" aria-label="Console views">
-      <a class="tour-item" href="app.html#/overview">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 9.5h4v4H2zM2 2.5h4v4H2zM10 2.5h4v8h-4zM10 12.5h4v1h-4z"/></svg>
-          <span class="tour-t">Overview</span>
-        </div>
-        <p class="tour-d">Decision volume by hour, security events, identities under review and the open-finding mix. Every tile is derived from the request log, so the numbers agree with the tables behind them.</p>
-        <div class="tour-k">g then 1</div>
+      <a class="tour-row" href="app.html#/overview">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9.5h4v4H2zM2 2.5h4v4H2zM10 2.5h4v8h-4zM10 12.5h4v1h-4z"/></svg></span>
+        <span class="tour-nm">Overview</span>
+        <span class="tour-ds">Decision volume by hour, security events, identities under review and the open-finding mix. Every tile is derived from the request log, so the numbers agree with the tables behind them.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>1</kbd></span>
       </a>
-      <a class="tour-item" href="app.html#/api">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
-          <span class="tour-t">API monitor</span>
-        </div>
-        <p class="tour-d">Filterable request table with a detail drawer: factor weights, the policy evaluated, the inspected body, and the chain linking the request to its event and to any code finding that explains it.</p>
-        <div class="tour-k">g then 2</div>
+      <a class="tour-row" href="app.html#/api">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg></span>
+        <span class="tour-nm">API monitor</span>
+        <span class="tour-ds">Filterable request table with a detail drawer: factor weights, the policy evaluated, the inspected body, and the chain linking the request to its event and to any code finding that explains it.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>2</kbd></span>
       </a>
-      <a class="tour-item" href="app.html#/risk">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1.8 2.3 4.4v4c0 3.1 2.4 5.3 5.7 5.9 3.3-.6 5.7-2.8 5.7-5.9v-4z"/></svg>
-          <span class="tour-t">Risk analysis</span>
-        </div>
-        <p class="tour-d">One score, its contributing factors, and the timeline of what the same identity did around it — the context that turns a number into a judgement you can defend.</p>
-        <div class="tour-k">g then 3</div>
+      <a class="tour-row" href="app.html#/risk">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.8 2.3 4.4v4c0 3.1 2.4 5.3 5.7 5.9 3.3-.6 5.7-2.8 5.7-5.9v-4z"/></svg></span>
+        <span class="tour-nm">Risk analysis</span>
+        <span class="tour-ds">One score, its contributing factors, and the timeline of what the same identity did around it — the context that turns a number into a judgement you can defend.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>3</kbd></span>
       </a>
-      <a class="tour-item" href="app.html#/code">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg>
-          <span class="tour-t">Code analyzer</span>
-        </div>
-        <p class="tour-d">File tree, the flagged source with the finding inline, a suggested patch as a diff, and the runtime requests that correlate with it. Resolving a finding moves the dashboard.</p>
-        <div class="tour-k">g then 4</div>
+      <a class="tour-row" href="app.html#/code">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4.5 2 8l3.5 3.5M10.5 4.5 14 8l-3.5 3.5"/></svg></span>
+        <span class="tour-nm">Code analyzer</span>
+        <span class="tour-ds">File tree, the flagged source with the finding inline, a suggested patch as a diff, and the runtime requests that correlate with it. Resolving a finding moves the dashboard.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>4</kbd></span>
       </a>
-      <a class="tour-item" href="app.html#/policies">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 2.5h7l3 3v8H3z"/><path d="M9.5 2.5v3.5H13"/></svg>
-          <span class="tour-t">Policies</span>
-        </div>
-        <p class="tour-d">Conditions, action and a live test bench. Paste a request context, evaluate it, and read the per-condition trace — including which field came back undefined.</p>
-        <div class="tour-k">g then 5</div>
+      <a class="tour-row" href="app.html#/policies">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2.5h7l3 3v8H3z"/><path d="M9.5 2.5v3.5H13"/></svg></span>
+        <span class="tour-nm">Policies</span>
+        <span class="tour-ds">Conditions, action and a live test bench. Paste a request context, evaluate it, and read the per-condition trace — including which field came back undefined.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>5</kbd></span>
       </a>
-      <a class="tour-item" href="app.html#/copilot">
-        <div class="tour-hd">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>
-          <span class="tour-t">Copilot</span>
-        </div>
-        <p class="tour-d">Ask why a request was stopped. Answers are composed from the same records the console displays, with the tool calls shown, and it is read-only by design — it explains decisions, it does not make them.</p>
-        <div class="tour-k">g then 6</div>
+      <a class="tour-row" href="app.html#/copilot">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg></span>
+        <span class="tour-nm">Copilot</span>
+        <span class="tour-ds">Ask why a request was stopped. Answers are composed from the same records the console displays, with the tool calls shown, and it is read-only by design.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>6</kbd></span>
+      </a>
+      <a class="tour-row" href="app.html#/audit">
+        <span class="tour-ic"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4.6V8l2.4 1.6"/></svg></span>
+        <span class="tour-nm">Audit log</span>
+        <span class="tour-ds">Guardrail decisions, finding lifecycle changes, policy edits and scan completions, in one append-only table. Anything you do in the console lands here as you do it.</span>
+        <span class="tour-kb"><kbd>g</kbd><kbd>7</kbd></span>
       </a>
     </nav>
   </section>

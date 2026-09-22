@@ -1,0 +1,62 @@
+name: Deploy GuardX to GitHub Pages
+
+# The site is static — no build step, no dependencies. This workflow simply
+# publishes the repository root as the Pages artifact.
+on:
+  push:
+    branches:
+      - main
+      - claude/jolly-noether-hrnp6s
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that every referenced asset exists
+        run: |
+          set -euo pipefail
+          # A piped `while` runs in a subshell, so collect first and check after.
+          refs=$(grep -ohE '(href|src)="assets/[^"]+"' index.html app.html \
+                 | sed -E 's/.*"(assets\/[^"]+)"/\1/' | sort -u)
+          missing=0
+          for ref in $refs; do
+            if [ ! -f "$ref" ]; then
+              echo "::error::missing asset $ref"
+              missing=1
+            fi
+          done
+          # Stylesheets reference fonts by relative path; check those too.
+          for ref in $(grep -ohE 'url\(\.\./fonts/[^)]+\)' assets/css/*.css \
+                       | sed -E 's/url\(\.\.\/(fonts\/[^)]+)\)/assets\/\1/' | sort -u); do
+            if [ ! -f "$ref" ]; then
+              echo "::error::missing font $ref"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+          echo "all referenced assets present"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

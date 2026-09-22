@@ -111,10 +111,8 @@ assets/
 
 Published to GitHub Pages by `.github/workflows/deploy-pages.yml` on push. The
 workflow checks that every asset referenced by the two HTML pages exists before
-publishing.
-
-One-time repository setting: **Settings → Pages → Build and deployment →
-Source: GitHub Actions**.
+publishing, and enables Pages itself on the first run, so no manual repository
+setting is needed.
 
 ---
 

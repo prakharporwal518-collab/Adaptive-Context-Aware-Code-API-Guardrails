@@ -98,6 +98,7 @@ so there is no third-party font request and no flash of fallback text.
 ```
 index.html              public overview
 app.html                console shell
+render.yaml             Render blueprint (static site, no env vars)
 assets/
   css/  tokens · base · site · app · fonts
   js/   data · store · charts · ui · icons · app
@@ -109,21 +110,52 @@ assets/
 
 ## Deployment
 
-Published to GitHub Pages by `.github/workflows/deploy-pages.yml` on push. The
-workflow checks that every asset referenced by the two HTML pages exists before
-publishing.
+### Render (blueprint included)
+
+`render.yaml` describes the whole deploy, so there is nothing to fill in by
+hand. In Render: **New → Blueprint**, point it at this repo, apply.
+
+To set it up manually instead, create a **Static Site** (not a Web Service —
+there is no server to start) with:
+
+| Field | Value |
+|---|---|
+| Branch | `claude/jolly-noether-hrnp6s` |
+| Build Command | *(leave blank)* |
+| Publish Directory | `.` |
+| Environment Variables | *(none)* |
+
+**There are no environment variables.** No build step, no backend, no API
+calls, nothing reads configuration at runtime. If you grep the repo you will
+find `process.env.STRIPE_KEY` and an `sk_live_...` string in
+`assets/js/data.js` — those are the fake vulnerable source snippets the Code
+analyzer displays as findings. They are not configuration and nothing reads
+them.
+
+**Do not add a `/*` → `/index.html` rewrite.** Render suggests it for
+single-page apps; here it would swallow `/app.html` and serve the landing page
+instead. The console uses hash routing, so every URL is a real file.
+
+The blueprint also sets `X-Content-Type-Options`, `Referrer-Policy`,
+`Permissions-Policy` and a Content-Security-Policy derived from what the pages
+actually load. The policy was verified against every view, including the
+drawer, test bench and copilot: no violations, fonts load, and injected inline
+script is refused (`script-src-elem`). `style-src` needs `'unsafe-inline'`
+because the markup and chart code set `style="..."` attributes; that is the one
+directive that cannot be tightened without rewriting those call sites.
+
+After merging to `main`, change `branch` in `render.yaml`.
+
+### GitHub Pages
+
+Also published by `.github/workflows/deploy-pages.yml` on push, which checks
+that every referenced asset exists before publishing.
 
 **One-time setup by a repository admin:** Settings → Pages → Build and
 deployment → Source: **GitHub Actions**. This cannot be automated — creating a
 Pages site is an admin-scoped API that the workflow's `GITHUB_TOKEN` is refused
-access to, even with `pages: write`. Once it is set, re-run the latest workflow
-(Actions → Deploy GuardX to GitHub Pages → Re-run jobs) and every later push
-deploys on its own.
-
-The site will be served at
-`https://prakharporwal518-collab.github.io/Adaptive-Context-Aware-Code-API-Guardrails/`.
-
----
+access to, even with `pages: write`. Once set, re-run the latest workflow and
+every later push deploys on its own.
 
 ## Scope and honesty
 

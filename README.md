@@ -110,10 +110,20 @@ assets/
 
 ## Deployment
 
-### Render (blueprint included)
+### Render — live
 
-`render.yaml` describes the whole deploy, so there is nothing to fill in by
-hand. In Render: **New → Blueprint**, point it at this repo, apply.
+**https://adaptive-context-aware-code-api.onrender.com**
+
+Served by the static site `Adaptive-Context-Aware-Code-API-Guardrails`, managed
+by the Render Blueprint `GuardX`, which reads `render.yaml` from this branch.
+Pushes deploy automatically.
+
+The service name in `render.yaml` must stay equal to the service's name in
+Render: Blueprint sync matches existing resources by name, and a mismatch makes
+it create a second, duplicate site instead of updating this one.
+
+To deploy a fork: **New → Blueprint**, point it at the repo, apply. There is
+nothing to fill in by hand.
 
 To set it up manually instead, create a **Static Site** (not a Web Service —
 there is no server to start) with:

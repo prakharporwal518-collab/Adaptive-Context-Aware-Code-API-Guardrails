@@ -6,8 +6,10 @@
 # After merging to main, change `branch` below to main.
 
 services:
+  # The name must match the existing service exactly, so that a Blueprint
+  # sync adopts it instead of creating a second, duplicate static site.
   - type: web
-    name: guardx
+    name: Adaptive-Context-Aware-Code-API-Guardrails
     runtime: static
     branch: claude/jolly-noether-hrnp6s
 
